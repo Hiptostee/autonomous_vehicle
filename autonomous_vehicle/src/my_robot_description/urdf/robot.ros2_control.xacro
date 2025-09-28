@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <!-- Plugin for Gazebo to interface with ros2_control -->
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+
+        <!-- Right Wheel Joint -->
+        <joint name="right_wheel_joint">
+            <!-- Command interfaces are the types of commands the joint can receive -->
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <!-- State interfaces are the types of feedback the joint provides -->
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <!-- Left Wheel Joint -->
+        <joint name="left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control>
+
+    <!-- Gazebo Plugin -->
+    <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+             <!-- Path to the controller configuration file -->
+            <parameters>$(find my_robot_description)/config/gazebo_control.yaml</parameters>
+        </plugin>
+    </gazebo>
+
+</robot>
