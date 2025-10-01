@@ -7,39 +7,40 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 
+
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    # Get the path to the package
     pkg_path = get_package_share_directory('my_robot_description')
 
-    # Get the path to the Gazebo launch file
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
         )
 
-    # Get the path to the URDF file
     xacro_file = os.path.join(pkg_path,'urdf','robot.urdf.xacro')
 
-    # Process the URDF file using the xacro command
     robot_description = {'robot_description': Command(['xacro ', xacro_file])}
 
-    # Create a node for the robot_state_publisher
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
         parameters=[robot_description]
     )
+    node_scan = Node(
+        namespace='lidar', package='lidar',
+        executable='scan_to_cloud_node', output='screen')
+    node_obstacle = Node(
+        namespace='obstacle_mitigation', package='obstacle_mitigation',
+        executable='obstacle_mitigation_node', output='screen')
 
-    # Create a node to spawn the robot in Gazebo
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
                         arguments=['-topic', 'robot_description',
-                                   '-entity', 'my_robot'],
+                                   '-entity', 'my_robot',
+                                   '-x', '0', '-y', '0', '-z', '0.1'],
                         output='screen')
 
-    # Create a node for the joint_state_broadcaster
     load_joint_state_broadcaster = Node(
         package='controller_manager',
         executable='spawner',
@@ -47,7 +48,6 @@ def generate_launch_description():
         output='screen'
     )
     
-    # Create a node for the diff_drive_controller
     load_diff_drive_controller = Node(
         package='controller_manager',
         executable='spawner',
@@ -55,10 +55,11 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Launch description
     return LaunchDescription([
         gazebo,
         node_robot_state_publisher,
+        node_scan,
+        node_obstacle,
         spawn_entity,
         load_joint_state_broadcaster,
         load_diff_drive_controller
