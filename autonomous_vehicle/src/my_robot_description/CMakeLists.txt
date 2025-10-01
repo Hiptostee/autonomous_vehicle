@@ -10,9 +10,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
 
+
+
 ament_package()
 
 install(
-  DIRECTORY launch urdf config
+  DIRECTORY launch urdf worlds config
   DESTINATION share/${PROJECT_NAME}
 )

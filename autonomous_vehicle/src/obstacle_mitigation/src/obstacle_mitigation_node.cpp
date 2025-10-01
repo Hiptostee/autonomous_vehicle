@@ -31,7 +31,7 @@ class ObstacleMitigation : public rclcpp::Node{
     bool obstacle_detected_ = false;
 
     double frontal_x_threshold_ = 0.75;    
-    double frontal_y_tolerance_ = 0.2;   
+    double frontal_y_tolerance_ = 0.5;   
 
     void Callback(const sensor_msgs::msg::PointCloud2::SharedPtr points){
       obstacle_detected_ = false;
